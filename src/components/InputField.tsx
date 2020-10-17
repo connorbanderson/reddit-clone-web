@@ -18,11 +18,10 @@ const InputField: React.FC<InputFieldProps> = ({
   ...props
 }) => {
   const [field, { error }] = useField(props);
-  const { placeholder } = props;
   return (
     <FormControl isInvalid={!!error}>
       <FormLabel htmlFor={field.name}>{label}</FormLabel>
-      <Input {...field} {...props} id={field.name} placeholder={placeholder} />
+      <Input {...field} {...props} id={field.name} />
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>
   );
