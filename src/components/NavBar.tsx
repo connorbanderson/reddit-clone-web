@@ -1,14 +1,14 @@
 import { Box, Link, Flex, Button } from "@chakra-ui/core";
 import NextLink from "next/link";
-import { withUrqlClient } from "next-urql";
 
 import { useMeQuery, useLogoutMutation } from "../generated/graphql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 import { isSsr } from "../utils/isSsr";
+import { useRouter } from "next/router";
 
 interface NavBarProps {}
 
 const NavBar: React.FC<NavBarProps> = ({}) => {
+  const router = useRouter();
   const [{ fetching: isLogoutMutationFetching }, logout] = useLogoutMutation();
   const [{ data, fetching }] = useMeQuery({
     pause: isSsr(),
@@ -49,12 +49,17 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
     );
   }
   return (
-    <Flex bg="#355C7D" p={4} justifyContent="flex-end">
+    <Flex
+      position="sticky"
+      top={0}
+      zIndex={1}
+      bg="#355C7D"
+      p={4}
+      justifyContent="flex-end"
+    >
       <Box>{body}</Box>
     </Flex>
   );
 };
 
-const WrappedNavBar = withUrqlClient(createUrqlClient)(NavBar);
-
-export { WrappedNavBar as NavBar };
+export { NavBar };
