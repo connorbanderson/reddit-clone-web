@@ -47,11 +47,11 @@ const ChangePassword: NextPage<{}> = ({}) => {
             />
             {tokenError && (
               <Flex>
-                <Text mr={2} color="hotpink">
+                <Text mr={2} color="red.500">
                   {tokenError}
                 </Text>
                 <NextLink href="/forgot-password">
-                  <Link>click here get a new one</Link>
+                  <Link color="link">click here get a new one</Link>
                 </NextLink>
               </Flex>
             )}
