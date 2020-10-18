@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 const Index = () => {
   const router = useRouter();
 
-  const [{ data }] = usePostsQuery();
+  const [{ data }] = usePostsQuery({ variables: { limit: 25 } });
 
   return (
     <Layout>
