@@ -1,20 +1,17 @@
-import { NavBar } from "../components/NavBar";
+import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/core";
 import { withUrqlClient } from "next-urql";
-import { Button, Flex, Stack, Box, Heading, Text } from "@chakra-ui/core";
-
-import { createUrqlClient } from "../utils/createUrqlClient";
-import { usePostsQuery } from "../generated/graphql";
-import { Layout } from "../components/Layout";
 import { useRouter } from "next/router";
+import { Layout } from "../components/Layout";
+import { usePostsQuery } from "../generated/graphql";
+import { createUrqlClient } from "../utils/createUrqlClient";
 
 const Index = () => {
   const router = useRouter();
-
-  const [{ data }] = usePostsQuery({ variables: { limit: 25 } });
-
+  const [{ data, fetching }] = usePostsQuery({ variables: { limit: 25 } });
   return (
     <Layout>
-      <Flex pl="4" pr="4" width="100%" justifyContent="flex-end">
+      <Flex mb={8} width="100%" justifyContent="space-between">
+        <Heading>Reddit Clone</Heading>
         <Button onClick={() => router.push("/create-post")}>
           Create A Post
         </Button>
@@ -27,6 +24,11 @@ const Index = () => {
           </Box>
         ))}
       </Stack>
+      {data && (
+        <Flex m={8} width="100%" justifyContent="center">
+          <Button isLoading={fetching}>Load More</Button>
+        </Flex>
+      )}
     </Layout>
   );
 };
