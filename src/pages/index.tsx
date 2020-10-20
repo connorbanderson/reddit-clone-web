@@ -13,7 +13,9 @@ const Index = () => {
   });
   const router = useRouter();
   const [{ data, fetching }] = usePostsQuery({ variables });
-  const posts = data?.posts;
+
+  console.log("data", data);
+
   return (
     <Layout>
       <Flex mb={8} width="100%" justifyContent="space-between">
@@ -23,20 +25,20 @@ const Index = () => {
         </Button>
       </Flex>
       <Stack spacing={8}>
-        {posts?.map((p) => (
+        {data?.posts.posts?.map((p) => (
           <Box key={p.id} p={5} shadow="md" borderWidth="1px">
             <Heading fontSize="xl">{p.title}</Heading>
             <Text mt={4}>{p.textSnippet}</Text>
           </Box>
         ))}
       </Stack>
-      {data && (
+      {data && data.posts.hasMore && (
         <Flex m={8} width="100%" justifyContent="center">
           <Button
             onClick={() => {
               setVariables({
                 ...variables,
-                cursor: posts[posts.length - 1].createdAt,
+                cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
               });
             }}
             isLoading={fetching}
