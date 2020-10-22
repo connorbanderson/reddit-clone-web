@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/core";
+import { Box, Button, Flex, Heading, Stack, Text, Icon } from "@chakra-ui/core";
 import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import { Layout } from "../components/Layout";
@@ -26,10 +26,23 @@ const Index = () => {
       </Flex>
       <Stack spacing={8}>
         {data?.posts.posts?.map((p) => (
-          <Box key={p.id} p={5} shadow="md" borderWidth="1px">
-            <Heading fontSize="xl">{p.title}</Heading>
-            <Text mt={4}>{p.textSnippet}</Text>
-          </Box>
+          <Flex key={p.id} p={5} shadow="md" borderWidth="1px">
+            <Flex direction="column" alignItems="center" mr={6}>
+              <Icon name="chevron-up" size="24px" />
+              {p.points}
+              <Icon name="chevron-down" size="24px" />
+            </Flex>
+
+            <Flex
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              flexDirection="column"
+            >
+              <Heading fontSize="xl"> {p.title}</Heading>
+              <Text fontSize={12}>posted by: {p.creator.username}</Text>
+              <Text mt={4}>{p.textSnippet}</Text>
+            </Flex>
+          </Flex>
         ))}
       </Stack>
       {data && data.posts.hasMore && (
