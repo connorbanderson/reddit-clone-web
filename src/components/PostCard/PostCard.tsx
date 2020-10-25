@@ -11,7 +11,6 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { id, title, creator, textSnippet } = post;
-  const [{ data }] = useMeQuery();
   return (
     <Flex key={id} p={5} mb={3} shadow="md" borderWidth="1px">
       <UpdootSection post={post} />
