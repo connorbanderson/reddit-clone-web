@@ -1,8 +1,6 @@
-import { Box, Link, Flex, Button } from "@chakra-ui/core";
+import { Box, Link, Flex, Button, Heading } from "@chakra-ui/core";
 import NextLink from "next/link";
-
 import { useMeQuery, useLogoutMutation } from "../generated/graphql";
-import { isSsr } from "../utils/isSsr";
 import { useRouter } from "next/router";
 
 interface NavBarProps {}
@@ -10,9 +8,7 @@ interface NavBarProps {}
 const NavBar: React.FC<NavBarProps> = ({}) => {
   const router = useRouter();
   const [{ fetching: isLogoutMutationFetching }, logout] = useLogoutMutation();
-  const [{ data, fetching }] = useMeQuery({
-    pause: isSsr(),
-  });
+  const [{ data, fetching }] = useMeQuery();
   let body = null;
   if (fetching) {
   } else if (!data?.me) {
@@ -35,8 +31,9 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
           {data.me.username}
         </Box>
         <Button
-          onClick={() => {
-            logout();
+          onClick={async () => {
+            await logout();
+            router.reload();
           }}
           isLoading={isLogoutMutationFetching}
           bg="#6C5B7B"
@@ -55,9 +52,21 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
       zIndex={1}
       bg="#355C7D"
       p={4}
-      justifyContent="flex-end"
+      align="center"
     >
-      <Box>{body}</Box>
+      <Flex
+        width="100%"
+        maxW={800}
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <NextLink href="/">
+          <Link>
+            <Heading color="white">RedditClone</Heading>
+          </Link>
+        </NextLink>
+        <Box>{body}</Box>
+      </Flex>
     </Flex>
   );
 };
