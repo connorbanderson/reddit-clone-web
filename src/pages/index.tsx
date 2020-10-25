@@ -1,10 +1,20 @@
-import { Box, Button, Flex, Heading, Stack, Text, Icon } from "@chakra-ui/core";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Stack,
+  Text,
+  Icon,
+  IconButton,
+} from "@chakra-ui/core";
 import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import { Layout } from "../components/Layout";
 import { usePostsQuery } from "../generated/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { useState } from "react";
+import { PostCard } from "../components/PostCard";
 
 const Index = () => {
   const [variables, setVariables] = useState({
@@ -14,36 +24,17 @@ const Index = () => {
   const router = useRouter();
   const [{ data, fetching }] = usePostsQuery({ variables });
 
-  console.log("data", data);
-
   return (
     <Layout>
-      <Flex mb={8} width="100%" justifyContent="space-between">
-        <Heading>Reddit Clone</Heading>
+      <Flex mb={8} width="100%" justifyContent="flex-end">
         <Button onClick={() => router.push("/create-post")}>
           Create A Post
         </Button>
       </Flex>
       <Stack spacing={8}>
-        {data?.posts.posts?.map((p) => (
-          <Flex key={p.id} p={5} shadow="md" borderWidth="1px">
-            <Flex direction="column" alignItems="center" mr={6}>
-              <Icon name="chevron-up" size="24px" />
-              {p.points}
-              <Icon name="chevron-down" size="24px" />
-            </Flex>
-
-            <Flex
-              justifyContent="flex-start"
-              alignItems="flex-start"
-              flexDirection="column"
-            >
-              <Heading fontSize="xl"> {p.title}</Heading>
-              <Text fontSize={12}>posted by: {p.creator.username}</Text>
-              <Text mt={4}>{p.textSnippet}</Text>
-            </Flex>
-          </Flex>
-        ))}
+        {data?.posts.posts?.map((post) =>
+          !post ? null : <PostCard post={post} />
+        )}
       </Stack>
       {data && data.posts.hasMore && (
         <Flex m={8} width="100%" justifyContent="center">
