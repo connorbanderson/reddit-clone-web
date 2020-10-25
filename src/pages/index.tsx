@@ -1,58 +1,67 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Stack,
-  Text,
-  Icon,
-  IconButton,
-} from "@chakra-ui/core";
-import { withUrqlClient } from "next-urql";
-import { useRouter } from "next/router";
+import { Button, Flex, Stack } from "@chakra-ui/core";
 import { Layout } from "../components/Layout";
-import { usePostsQuery } from "../generated/graphql";
-import { createUrqlClient } from "../utils/createUrqlClient";
-import { useState } from "react";
 import { PostCard } from "../components/PostCard";
+import { usePostsQuery } from "../generated/graphql";
+import { withApollo } from "../utils/withApollo";
+import { useRouter } from "next/router";
 
 const Index = () => {
-  const [variables, setVariables] = useState({
-    limit: 10,
-    cursor: null as null | string,
-  });
   const router = useRouter();
-  const [{ data, fetching }] = usePostsQuery({ variables });
+  const { data, error, loading, fetchMore, variables } = usePostsQuery({
+    variables: {
+      limit: 15,
+      cursor: null,
+    },
+    notifyOnNetworkStatusChange: true,
+  });
+
+  if (!loading && !data) {
+    return (
+      <div>
+        <div>you got query failed for some reason</div>
+        <div>{error?.message}</div>
+      </div>
+    );
+  }
 
   return (
     <Layout>
-      <Flex mb={8} width="100%" justifyContent="flex-end">
-        <Button onClick={() => router.push("/create-post")}>
-          Create A Post
-        </Button>
-      </Flex>
-      <Stack spacing={8}>
-        {data?.posts.posts?.map((post) =>
-          !post ? null : <PostCard post={post} />
-        )}
-      </Stack>
-      {data && data.posts.hasMore && (
-        <Flex m={8} width="100%" justifyContent="center">
-          <Button
-            onClick={() => {
-              setVariables({
-                ...variables,
-                cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
-              });
-            }}
-            isLoading={fetching}
-          >
-            Load More
-          </Button>
+      {!data && loading ? (
+        <div>loading...</div>
+      ) : (
+        <Flex direction="column">
+          <Flex mb={8} width="100%" justifyContent="flex-end">
+            <Button onClick={() => router.push("/create-post")}>
+              Create A Post
+            </Button>
+          </Flex>
+          <Stack spacing={8}>
+            {data!.posts.posts.map((p) => (!p ? null : <PostCard post={p} />))}
+          </Stack>
         </Flex>
       )}
+      {data && data.posts.hasMore ? (
+        <Flex>
+          <Button
+            onClick={() => {
+              fetchMore({
+                variables: {
+                  limit: variables?.limit,
+                  cursor:
+                    data.posts.posts[data.posts.posts.length - 1].createdAt,
+                },
+              });
+            }}
+            isLoading={loading}
+            m="auto"
+            my={8}
+          >
+            load more
+          </Button>
+        </Flex>
+      ) : null}
     </Layout>
   );
 };
 
-export default withUrqlClient(createUrqlClient)(Index);
+export default withApollo({ ssr: true })(Index);
